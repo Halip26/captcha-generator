@@ -25,7 +25,7 @@ def verify(random: str, entry) -> None:
 
 
 def refresh(random: str = str(randint(100000, 999999)), image: ImageCaptcha = ImageCaptcha(
-            fonts=['./fonts/ChelseaMarketsr.ttf', './fonts/DejaVuSanssr.ttf']),
+            fonts=['./fonts/ChelseaMarketsr.ttf', './fonts//DejaVuSanssr.ttf']),
             img_output_path: str = 'captcha_image/output.png') -> None:
     generate_captcha(image, random, img_output_path)
     photo = PhotoImage(file=img_output_path)
