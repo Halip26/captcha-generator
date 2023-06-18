@@ -12,7 +12,7 @@ When the user submits an input, the code verifies if the input is the same as th
 
 To run the code, open it in an IDE or text editor and run it. The captcha image will be displayed along with the user input box and buttons. Enter the captcha shown in the image into the input box and click submit to verify. Below is the code:
 
-``` python
+```python
 from io import BytesIO
 from tkinter import *
 from random import randint
@@ -66,8 +66,35 @@ def refresh_captcha():
 
 root.mainloop()
 
-
 ```
+
+## Libraries Used
+
+- tkinter: for creating GUI components
+- captcha.image: for generating captcha images
+- messagebox from tkinter: for displaying message boxes
+
+### Functions
+
+- generate_image(): generates a new captcha image with a new random number, saves it to a file named output.png, and displays it in the GUI using the Label widget.
+- verify(): gets the input from the text box, compares it with the random number generated previously, and shows a message box with either a success message or an alert message, depending on whether the input is correct or not.
+
+### GUI Components
+
+- Label: to display the captcha image
+- Text: to get the input from the user
+- Button: to submit the input and refresh the captcha image
+
+### How to Run
+
+- To run the code, open it in an IDE or text editor and run it. The captcha image will be displayed along with the user input box and buttons.
+
+```console
+  $python.exe .\main.py
+```
+
+- Enter the six-digit number shown in the captcha image into the input box and click submit to verify.
+- Click the refresh button to generate a new captcha image if the current one is difficult to read.
 
 ### Changes Made
 
