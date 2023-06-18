@@ -1,53 +1,46 @@
 from io import BytesIO
-from random import randint
 from tkinter import *
+from random import randint
 from tkinter import messagebox
-
 from captcha.image import ImageCaptcha
 
+image = ImageCaptcha(
+    fonts=['./fonts/ChelseaMarketsr.ttf', './fonts/DejaVuSanssr.ttf'])
 
-def generate_captcha(image: ImageCaptcha, random: str,
-                     output_path: str = 'captcha_image/output.png') -> None:
+
+def generate_image():
+    global random, photo
+    random = str(randint(100000, 999999))
     data = image.generate(random)
-    if not isinstance(data, BytesIO):
-        raise TypeError(
-            f"data is of type {type(data)} and not {BytesIO} as expected")
-    image.write(random, output_path)
+    assert isinstance(data, BytesIO)
+    image.write(random, './captcha_image/output.png')
+    photo = PhotoImage(file='./captcha_image/output.png')
+    l1.config(image=photo, height=100, width=200)
 
 
-def verify(random: str, entry) -> None:
-    x = entry.get("0.0", END)
-    if int(x) == int(random):
-        messagebox.showinfo("Success", "Verified")
+def verify():
+    x = t1.get("0.0", END).strip()
+    if (int(x) == int(random)):
+        messagebox.showinfo("sucsess", "verified")
+        generate_image()
     else:
         messagebox.showinfo("Alert", "Not verified")
-        refresh()
+        generate_image()
 
-
-def refresh(random: str = str(randint(100000, 999999)), image: ImageCaptcha = ImageCaptcha(
-            fonts=['./fonts/ChelseaMarketsr.ttf', './fonts//DejaVuSanssr.ttf']),
-            img_output_path: str = 'captcha_image/output.png') -> None:
-    generate_captcha(image, random, img_output_path)
-    photo = PhotoImage(file=img_output_path)
-    l1.config(image=photo, height=100, width=200)
-    l1.update()
-
-
-image = ImageCaptcha(
-    fonts=['./fonts/ChelseaMarketsr.ttf', './fonts//DejaVuSanssr.ttf'])
-
-random = str(randint(100000, 999999))
-generate_captcha(image, random)
 
 root = Tk()
-l1 = Label(root, image=PhotoImage(
-    file='captcha_image/output.png'), height=100, width=200)
-entry = Text(root, height=5, width=50)
-submit = Button(root, text="Submit", command=lambda: verify(random, entry))
-refresh_btn = Button(root, text="Refresh",
-                     command=lambda: refresh(random, image))
+photo = None  # To avoid UnboundLocalError
+
+l1 = Label(root, height=100, width=200)
+t1 = Text(root, height=5, width=50)
+b1 = Button(root, text="submit", command=verify)
+b2 = Button(root, text="refresh", command=generate_image)
+
 l1.pack()
-entry.pack()
-submit.pack()
-refresh_btn.pack()
+t1.pack()
+b1.pack()
+b2.pack()
+
+generate_image()  # To display image on application startup
+
 root.mainloop()
