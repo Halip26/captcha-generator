@@ -16,57 +16,104 @@ To run the code, open it in an IDE or text editor and run it. The captcha image 
 from io import BytesIO
 from tkinter import *
 from random import randint
-from tkinter.messagebox import showinfo, showerror
+from tkinter import messagebox
 from captcha.image import ImageCaptcha
 
-# Generate a random number
-num1 = str(randint(0, 9))
-num2 = str(randint(0, 9))
-num3 = str(randint(0, 9))
-num4 = str(randint(0, 9))
-captcha_text = f"{num1}{num2}{num3}{num4}"
+image = ImageCaptcha(fonts=["./fonts/ChelseaMarketsr.ttf", "./fonts/DejaVuSanssr.ttf"])
 
-# Save the captcha as an image
-image = ImageCaptcha().generate(captcha_text)
-im = BytesIO()
-image.save(im, format='PNG')
-img = im.getvalue()
+```
 
-# Set up the GUI
-root = Tk()
-root.geometry("400x150")
-root.title("Captcha Verification")
+```python
+# define generator image
+def generate_image():
+    global random, photo
+    random = str(randint(100000, 999999))
+    data = image.generate(random)
+    assert isinstance(data, BytesIO)
+    image.write(random, "./captcha_image/output.png")
+    photo = PhotoImage(file="./captcha_image/output.png")
+    l1.config(image=photo, height=100, width=200)
 
-# Create the label and buttons in the GUI
-Label(root, text="Please enter the captcha below: ").grid(row=0, column=0, padx=10, pady=10)
-captcha = Entry(root, width=10)
-captcha.grid(row=0, column=1)
-Button(root, text="Submit", command=lambda: verify_captcha()).grid(row=1, column=1, pady=5)
-Button(root, text="Refresh Captcha", command=lambda: refresh_captcha()).grid(row=1, column=0, pady=5)
+```
 
-# Function to verify the captcha
-def verify_captcha():
-    if captcha.get() == captcha_text:
-        showinfo("Success", "Captcha verification successful!")
+## Explanations of generate image
+
+Kode di atas adalah fungsi generate_image() yang digunakan untuk menghasilkan gambar captcha. Berikut adalah penjelasan dari setiap baris kode:
+
+def generate_image(): - Mendefinisikan fungsi generate_image().
+global random, photo - Mendeklarasikan variabel random dan photo sebagai variabel global.
+random = str(randint(100000, 999999)) - Menghasilkan angka acak antara 100000 hingga 999999 dan mengkonversinya menjadi string. Angka acak ini akan digunakan sebagai identitas unik untuk gambar captcha.
+data = image.generate(random) - Menghasilkan data gambar captcha menggunakan identitas unik yang dihasilkan sebelumnya dan menyimpannya di variabel data.
+assert isinstance(data, BytesIO) - Memastikan bahwa data adalah objek BytesIO.
+image.write(random, "./captcha_image/output.png") - Menyimpan gambar captcha dengan nama file output.png di direktori /captcha_image/.
+photo = PhotoImage(file="./captcha_image/output.png") - Membaca gambar captcha yang baru saja disimpan ke dalam objek PhotoImage dan menyimpannya di variabel photo.
+l1.config(image=photo, height=100, width=200) - Mengatur atribut image, height, dan width dari objek l1 (sebuah elemen GUI) dengan nilai yang sesuai dari gambar captcha yang telah dibaca.
+
+Kode di atas akan menghasilkan sebuah gambar captcha dan mengatur tampilan gambar tersebut di elemen GUI l1 dengan tinggi 100 dan lebar 200.
+
+```python
+# define verify
+def verify():
+    """
+    Mengambil input teks dari elemen GUI t1
+    dan menghapus spasi di awal dan akhir input.
+    Input ini akan disimpan dalam variabel x
+    """
+    x = t1.get("0.0", END).strip()
+    if int(x) == int(random):
+        messagebox.showinfo("Success", "verified")
+        generate_image()
     else:
-        showerror("Error", "Incorrect captcha!")
+        messagebox.showinfo("Alert", "Not verified")
+        generate_image()
 
-# Function to refresh the captcha image
-def refresh_captcha():
-    global captcha_text
-    num1 = str(randint(0, 9))
-    num2 = str(randint(0, 9))
-    num3 = str(randint(0, 9))
-    num4 = str(randint(0, 9))
-    captcha_text = f"{num1}{num2}{num3}{num4}"
-    image = ImageCaptcha().generate(captcha_text)
-    im = BytesIO()
-    image.save(im, format='PNG')
-    img = im.getvalue()
+```
+
+## Explanations of function verify()
+
+Kode di atas adalah fungsi verify() yang digunakan untuk memverifikasi input dari pengguna terhadap angka acak yang dihasilkan sebelumnya.
+
+Berikut adalah penjelasan dari setiap baris kode:
+
+def verify(): - Mendefinisikan fungsi verify(). x = t1.get("0.0", END).strip() - Mengambil input teks dari elemen GUI t1 dan menghapus spasi di awal dan akhir input. Input ini akan disimpan dalam variabel x. if int(x) == int(random): - Memeriksa apakah nilai x yang diinputkan oleh pengguna sama dengan nilai random yang dihasilkan sebelumnya. Kedua nilai ini dikonversi menjadi tipe data integer sebelum dibandingkan. messagebox.showinfo("Success", "Verified") - Jika kedua nilai tersebut sama, maka akan muncul pesan dialog dengan judul "Success" dan pesan "Verified" yang menandakan bahwa verifikasi berhasil. generate_image() - Memanggil fungsi generate_image() untuk menghasilkan gambar captcha baru setelah proses verifikasi selesai. else: - Jika kedua nilai tersebut tidak sama, maka akan dilakukan hal berikutnya. messagebox.showinfo("Alert", "Not verified") - Akan muncul pesan dialog dengan judul "Alert" dan pesan "Not verified" yang menandakan bahwa verifikasi tidak berhasil. generate_image() - Memanggil fungsi generate_image() untuk menghasilkan gambar captcha baru setelah proses verifikasi selesai.
+
+Kode di atas akan mengambil input dari pengguna, membandingkannya dengan angka acak yang dihasilkan sebelumnya, dan menampilkan pesan yang sesuai tergantung pada hasil verifikasi.
+
+```python
+root = Tk()
+photo = None  # To avoid UnboundLocalError
+
+l1 = Label(root, height=100, width=200)
+t1 = Text(root, height=5, width=50)
+b1 = Button(root, text="Submit", command=verify)
+b2 = Button(root, text="Refresh", command=generate_image)
+
+l1.pack()
+t1.pack()
+b1.pack()
+b2.pack()
+
+# To display image on application startup
+generate_image()
 
 root.mainloop()
 
+
 ```
+
+## Explanations of the rest codes
+
+Kode ini adalah implementasi dasar dari GUI (Graphical User Interface) menggunakan library Tkinter di Python. GUI ini memiliki beberapa elemen utama seperti label (l1), teks (t1), tombol (b1 dan b2), dan gambar (photo).
+
+Baris pertama membuat objek Tk() yang akan menjadi jendela utama GUI.
+Kemudian, variabel photo dideklarasikan dan diinisialisasi dengan None untuk menghindari UnboundLocalError.
+Selanjutnya, dibuat label (l1) dengan tinggi 100 piksel dan lebar 200 piksel menggunakan Label(root, height=100, width=200).
+Setelah itu, dibuat teks (t1) dengan tinggi 5 baris dan lebar 50 karakter menggunakan Text(root, height=5, width=50).
+Berikutnya, dibuat tombol (b1 dan b2) dengan teks "submit" dan "refresh" serta masing-masing memiliki aksi yang akan dieksekusi saat tombol ditekan menggunakan command=verify dan command=generate_image.
+Label, teks, dan tombol tersebut kemudian ditampilkan menggunakan l1.pack(), t1.pack(), b1.pack(), dan b2.pack().
+Setelah itu, fungsi generate_image() dipanggil untuk menampilkan gambar captcha pada saat aplikasi berjalan.
+Terakhir, root.mainloop() digunakan untuk menjalankan GUI dan menjaga jendela GUI tetap terbuka sampai ditutup oleh pengguna.
+Kode di atas menunjukkan bagaimana membuat GUI sederhana dengan beberapa elemen dan menghubungkannya dengan fungsi-fungsi tertentu untuk melakukan tugas-tugas seperti verifikasi input dan menghasilkan gambar captcha.
 
 ## Libraries Used
 

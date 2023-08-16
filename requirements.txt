@@ -1,1 +1,1 @@
-captcha
+!pip install captcha
