@@ -20,11 +20,6 @@ def generate_image():
 
 # define verify
 def verify():
-    """
-    Mengambil input teks dari elemen GUI t1
-    dan menghapus spasi di awal dan akhir input.
-    Input ini akan disimpan dalam variabel x
-    """
     x = t1.get("0.0", END).strip()
     if int(x) == int(random):
         messagebox.showinfo("Success", "verified")
