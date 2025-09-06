@@ -1,5 +1,6 @@
 captcha_images/
 videos/
+env/
 
 *.mp4
 *.jpg
